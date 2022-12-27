@@ -1,5 +1,5 @@
 # gin-pagination
-Simple [agination middleware for the gin framework
+Simple pagination middleware for the gin framework
 
 ## Installation
 ``` bash
