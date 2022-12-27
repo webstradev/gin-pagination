@@ -47,14 +47,18 @@ import (
 func main(){
   r := gin.Default()
   
-  router.GET("/hello", pagination.Default(), func(c *gin.Context){
-    c.Status(http.StatusOK)  
+  r.GET("/hello", pagination.Default(), func(c *gin.Context){
+    page := c.GetInt("page")
+  
+    c.JSON(http.StatusOK, gin.H{"page":page})  
   })
   
   r.Run(":3000")
 }
 ```
+The `page` and `size` are now available in the gin context of a request and can be used to paginate your date (for example in an SQL query.
 
+ 
 ## Custom Usage
 To create a pagination middleware with custom parameters use the `pagination.New()` function.
 ``` go
@@ -72,10 +76,11 @@ func main(){
   
   paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
   
-  router.GET("/hello", paginator, func(c *gin.Context){
+  r.GET("/hello", paginator, func(c *gin.Context){
     c.Status(http.StatusOK)  
   })
   
   r.Run(":3000")
 }
 ```
+The custom middleware can also be used on an entire router object similar to the first example fo the Default Usage.
