@@ -39,7 +39,7 @@ func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, m
 			return
 		}
 
-		// Validate for postive page number
+		// Validate for positive page number
 		if page < 0 {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page number must be positive"})
 			return
