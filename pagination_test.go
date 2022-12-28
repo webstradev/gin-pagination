@@ -122,6 +122,8 @@ func TestPaginationMiddleware(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			gin.SetMode(gin.TestMode)
+
 			// Create a test context
 			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
 
