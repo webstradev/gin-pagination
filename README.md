@@ -2,7 +2,7 @@
 Simple pagination middleware for the gin framework
 
 ## Installation
-``` bash
+```bash
 $ go get github.com/webstradev/gin-pagination
 ```
 
@@ -10,7 +10,7 @@ $ go get github.com/webstradev/gin-pagination
 This package comes with a default pagination handler. This uses query parameters `page` and `size` with default values of `1` and `10` and a maximum page size of `100`.
 
 #### Using the middleware on a router will apply the it to all request on that router:
-``` go
+```go
 package main
 
 import (
@@ -34,7 +34,7 @@ func main(){
 ```
 
 #### Using the middleware on a single route will only apply it to that route:
-``` go
+```go
 package main
 
 import (
@@ -56,12 +56,12 @@ func main(){
   r.Run(":3000")
 }
 ```
-The `page` and `size` are now available in the gin context of a request and can be used to paginate your date (for example in an SQL query.
+The `page` and `size` are now available in the gin context of a request and can be used to paginate your date (for example in an SQL query).
 
  
 ## Custom Usage
 To create a pagination middleware with custom parameters use the `pagination.New()` function.
-``` go
+```go
 package main
 
 import (
@@ -83,4 +83,5 @@ func main(){
   r.Run(":3000")
 }
 ```
-The custom middleware can also be used on an entire router object similar to the first example fo the Default Usage.
+
+The custom middleware can also be used on an entire router object similarly to the first example fo the Default Usage.
