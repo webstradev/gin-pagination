@@ -1,5 +1,8 @@
 # gin-pagination
-Simple pagination middleware for the gin framework
+[![Run Tests](https://github.com/webstradev/gin-pagination/actions/workflows/test.yml/badge.svg)](https://github.com/webstradev/gin-pagination/actions/workflows/test.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/webstradev/gin-pagination)](https://goreportcard.com/report/github.com/webstradev/gin-pagination)
+
+Simple pagination middleware for the gin framework. Allows for the usage of url parameters like `?page=1&size=25` to paginate data on your API.
 
 ## Installation
 ```bash
