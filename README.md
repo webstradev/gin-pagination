@@ -1,5 +1,6 @@
 # gin-pagination
 [![Run Tests](https://github.com/webstradev/gin-pagination/actions/workflows/test.yml/badge.svg)](https://github.com/webstradev/gin-pagination/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/webstradev/gin-pagination/branch/master/graph/badge.svg?token=C2D4QHYHI4)](https://codecov.io/gh/webstradev/gin-pagination)
 [![Go Report Card](https://goreportcard.com/badge/github.com/webstradev/gin-pagination)](https://goreportcard.com/report/github.com/webstradev/gin-pagination)
 [![CodeQL](https://github.com/webstradev/gin-pagination/actions/workflows/codeql.yml/badge.svg)](https://github.com/webstradev/gin-pagination/actions/workflows/codeql.yml)
 
