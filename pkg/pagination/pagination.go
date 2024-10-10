@@ -18,7 +18,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		// Extract the page from the query string and convert it to an integer.
-		pageStr := c.DefaultQuery(opts.PageText, opts.DefaultPage)
+		pageStr := c.DefaultQuery(opts.PageText, strconv.Itoa(opts.DefaultPage))
 		page, err := strconv.Atoi(pageStr)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -42,7 +42,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 		}
 
 		// Extract the size from the query string and convert it to an integer.
-		sizeStr := c.DefaultQuery(opts.SizeText, opts.DefaultPageSize)
+		sizeStr := c.DefaultQuery(opts.SizeText, strconv.Itoa(opts.DefaultPageSize))
 		size, err := strconv.Atoi(sizeStr)
 		if err != nil {
 			c.AbortWithStatusJSON(

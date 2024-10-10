@@ -116,8 +116,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			pagination.New(
 				pagination.WithPageText("pages"),
 				pagination.WithSizeText("items"),
-				pagination.WithDefaultPage("0"),
-				pagination.WithDefaultPageSize("5"),
+				pagination.WithDefaultPage(0),
+				pagination.WithDefaultPageSize(5),
 				pagination.WithMinPageSize(1),
 				pagination.WithMaxPageSize(25),
 			),

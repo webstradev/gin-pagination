@@ -3,8 +3,8 @@ package pagination
 type options struct {
 	PageText        string
 	SizeText        string
-	DefaultPage     string
-	DefaultPageSize string
+	DefaultPage     int
+	DefaultPageSize int
 	MinPageSize     int
 	MaxPageSize     int
 }
@@ -12,8 +12,8 @@ type options struct {
 var defaultOptions = options{
 	PageText:        "page",
 	SizeText:        "size",
-	DefaultPage:     "1",
-	DefaultPageSize: "10",
+	DefaultPage:     1,
+	DefaultPageSize: 10,
 	MinPageSize:     10,
 	MaxPageSize:     100,
 }
@@ -32,13 +32,13 @@ func WithSizeText(sizeText string) CustomOption {
 	}
 }
 
-func WithDefaultPage(page string) CustomOption {
+func WithDefaultPage(page int) CustomOption {
 	return func(opts *options) {
 		opts.DefaultPage = page
 	}
 }
 
-func WithDefaultPageSize(pageSize string) CustomOption {
+func WithDefaultPageSize(pageSize int) CustomOption {
 	return func(opts *options) {
 		opts.DefaultPageSize = pageSize
 	}
