@@ -1,3 +1,6 @@
+// Package pagination provides a middleware for Gin web framework to handle
+// pagination. It allows for the usage of url parameters like `?page=1&size=25`
+// to paginate data on your API.
 package pagination
 
 import (
