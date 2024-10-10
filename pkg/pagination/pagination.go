@@ -5,6 +5,7 @@
 package pagination
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -14,59 +15,89 @@ import (
 
 // New returns a new pagination middleware with custom values.
 func New(customOptions ...CustomOption) gin.HandlerFunc {
-	opts := applyCustomOptionsToDefault(customOptions...)
 
 	return func(c *gin.Context) {
-		// Extract the page from the query string and convert it to an integer.
-		pageStr := c.DefaultQuery(opts.PageText, strconv.Itoa(opts.DefaultPage))
-		page, err := strconv.Atoi(pageStr)
+		p := &paginator{
+			opts: applyCustomOptionsToDefault(customOptions...),
+			c:    c,
+		}
+
+		page, err := p.getPageFromRequest()
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusBadRequest,
-				gin.H{
-					"error": "page number must be an integer",
-				},
-			)
+			p.abortWithBadRequest(err)
 			return
 		}
 
-		// Validate for positive page number.
-		if page < 0 {
-			c.AbortWithStatusJSON(
-				http.StatusBadRequest,
-				gin.H{
-					"error": "page number must be positive",
-				},
-			)
+		if err := p.validatePage(page); err != nil {
+			p.abortWithBadRequest(err)
 			return
 		}
 
-		// Extract the size from the query string and convert it to an integer.
-		sizeStr := c.DefaultQuery(opts.SizeText, strconv.Itoa(opts.DefaultPageSize))
-		size, err := strconv.Atoi(sizeStr)
+		pageSize, err := p.getPageSizeFromRequest()
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusBadRequest,
-				gin.H{
-					"error": "page size must be an integer",
-				},
-			)
+			p.abortWithBadRequest(err)
 			return
 		}
 
-		// Validate for min and max page size.
-		if size < opts.MinPageSize || size > opts.MaxPageSize {
-			errorMessage := fmt.Sprintf(
-				"page size must be between %d and %d", opts.MinPageSize, opts.MaxPageSize,
-			)
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errorMessage})
+		if err := p.validatePageSize(pageSize); err != nil {
+			p.abortWithBadRequest(err)
 			return
 		}
 
-		// Set the page and size in the gin context.
-		c.Set(opts.PageText, page)
-		c.Set(opts.SizeText, size)
+		p.setPageAndPageSize(page, pageSize)
 
-		c.Next()
+		p.Next()
 	}
+}
+
+type paginator struct {
+	opts options
+	c    *gin.Context
+}
+
+func (p *paginator) abortWithBadRequest(err error) {
+	p.c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+}
+
+func (p *paginator) getPageFromRequest() (int, error) {
+	return p.getIntValueWithDefault(p.opts.PageText, strconv.Itoa(p.opts.DefaultPage))
+}
+
+func (p *paginator) getPageSizeFromRequest() (int, error) {
+	return p.getIntValueWithDefault(p.opts.SizeText, strconv.Itoa(p.opts.DefaultPageSize))
+}
+
+func (p *paginator) getIntValueWithDefault(key string, defaultValue string) (int, error) {
+	valueStr := p.c.DefaultQuery(key, defaultValue)
+	value, err := strconv.Atoi(valueStr)
+	if err != nil {
+		return 0, fmt.Errorf("%s parameter must be an integer", key)
+	}
+
+	return value, nil
+}
+
+func (p *paginator) validatePage(page int) error {
+	if page < 0 {
+		return errors.New("page number must be positive")
+	}
+
+	return nil
+}
+
+func (p *paginator) validatePageSize(size int) error {
+	if size < p.opts.MinPageSize || size > p.opts.MaxPageSize {
+		return errors.New("page size must be between %d and %d")
+	}
+
+	return nil
+}
+
+func (p *paginator) setPageAndPageSize(page int, size int) {
+	p.c.Set(p.opts.PageText, page)
+	p.c.Set(p.opts.SizeText, size)
+}
+
+func (p *paginator) Next() {
+	p.c.Next()
 }
