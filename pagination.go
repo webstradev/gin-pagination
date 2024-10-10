@@ -10,32 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	defaultPageText    = "page"
-	defaultSizeText    = "size"
-	defaultPage        = "1"
-	defaultPageSize    = "10"
-	defaultMinPageSize = 10
-	defaultMaxPageSize = 100
-)
-
-// Default returns a new pagination middleware with default values.
-func Default() gin.HandlerFunc {
-	return New(
-		defaultPageText,
-		defaultSizeText,
-		defaultPage,
-		defaultPageSize,
-		defaultMinPageSize,
-		defaultMaxPageSize,
-	)
-}
-
 // New returns a new pagination middleware with custom values.
-func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, maxPageSize int) gin.HandlerFunc {
+func New(customOptions ...CustomOption) gin.HandlerFunc {
+	opts := defaultOptions
+	for _, customOption := range customOptions {
+		customOption(&opts)
+	}
+
 	return func(c *gin.Context) {
 		// Extract the page from the query string and convert it to an integer
-		pageStr := c.DefaultQuery(pageText, defaultPage)
+		pageStr := c.DefaultQuery(opts.PageText, opts.Page)
 		page, err := strconv.Atoi(pageStr)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page number must be an integer"})
@@ -49,7 +33,7 @@ func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, m
 		}
 
 		// Extract the size from the query string and convert it to an integer
-		sizeStr := c.DefaultQuery(sizeText, defaultPageSize)
+		sizeStr := c.DefaultQuery(opts.SizeText, opts.PageSize)
 		size, err := strconv.Atoi(sizeStr)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page size must be an integer"})
@@ -57,14 +41,14 @@ func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, m
 		}
 
 		// Validate for min and max page size
-		if size < minPageSize || size > maxPageSize {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page size must be between " + strconv.Itoa(minPageSize) + " and " + strconv.Itoa(maxPageSize)})
+		if size < opts.MinPageSize || size > opts.MaxPageSize {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page size must be between " + strconv.Itoa(opts.MinPageSize) + " and " + strconv.Itoa(opts.MaxPageSize)})
 			return
 		}
 
 		// Set the page and size in the gin context
-		c.Set(pageText, page)
-		c.Set(sizeText, size)
+		c.Set(opts.PageText, page)
+		c.Set(opts.SizeText, size)
 
 		c.Next()
 	}
