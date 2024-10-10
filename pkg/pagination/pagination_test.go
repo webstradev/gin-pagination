@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/webstradev/gin-pagination/pkg/pagination"
+	"github.com/webstradev/gin-pagination/v2/pkg/pagination"
 )
 
 func TestPaginationMiddleware(t *testing.T) {
