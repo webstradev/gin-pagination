@@ -8,23 +8,23 @@ import (
 )
 
 const (
-	DefaultPageText    = "page"
-	DefaultSizeText    = "size"
-	DefaultPage        = "1"
-	DefaultPageSize    = "10"
-	DefaultMinPageSize = 10
-	DefaultMaxPageSize = 100
+	defaultPageText    = "page"
+	defaultSizeText    = "size"
+	defaultPage        = "1"
+	defaultPageSize    = "10"
+	defaultMinPageSize = 10
+	defaultMaxPageSize = 100
 )
 
 // Default returns a new pagination middleware with default values.
 func Default() gin.HandlerFunc {
 	return New(
-		DefaultPageText,
-		DefaultSizeText,
-		DefaultPage,
-		DefaultPageSize,
-		DefaultMinPageSize,
-		DefaultMaxPageSize,
+		defaultPageText,
+		defaultSizeText,
+		defaultPage,
+		defaultPageSize,
+		defaultMinPageSize,
+		defaultMaxPageSize,
 	)
 }
 
