@@ -21,7 +21,7 @@ func TestPaginationMiddleware(t *testing.T) {
 	}{
 		{
 			"Non int Page Param - Bad Request",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"notanumber"},
 			},
@@ -32,7 +32,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Non int Size Param - Bad Request",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"1"},
 				"size": {"notanumber"},
@@ -44,7 +44,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Negative Page Param - Bad Request",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"-1"},
 			},
@@ -55,7 +55,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Size below min - Bad Request",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"1"},
 				"size": {"0"},
@@ -67,7 +67,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Size above max - Bad Request",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"1"},
 				"size": {"101"},
@@ -79,7 +79,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Default Handling",
-			Default(),
+			New(),
 			url.Values{},
 			1,
 			10,
@@ -88,7 +88,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"The first 100 results",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"1"},
 				"size": {"100"},
@@ -100,7 +100,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"The second 20 results",
-			Default(),
+			New(),
 			url.Values{
 				"page": {"2"},
 				"size": {"20"},
@@ -112,7 +112,7 @@ func TestPaginationMiddleware(t *testing.T) {
 		},
 		{
 			"Custom Handling",
-			New("pages", "items", "0", "5", 1, 25),
+			New(WithPageText("pages"), WithSizeText("items"), WithDefaultPage("0"), WithDefaultPageSize("5"), WithMinPageSize(1), WithMaxPageSize(25)),
 			url.Values{},
 			0,
 			5,

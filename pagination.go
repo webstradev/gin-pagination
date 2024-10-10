@@ -5,6 +5,7 @@
 package pagination
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,37 +14,52 @@ import (
 
 // New returns a new pagination middleware with custom values.
 func New(customOptions ...CustomOption) gin.HandlerFunc {
-	opts := defaultOptions
-	for _, customOption := range customOptions {
-		customOption(&opts)
-	}
+	opts := applyCustomOptionsToDefault(customOptions...)
 
 	return func(c *gin.Context) {
 		// Extract the page from the query string and convert it to an integer
-		pageStr := c.DefaultQuery(opts.PageText, opts.Page)
+		pageStr := c.DefaultQuery(opts.PageText, opts.DefaultPage)
 		page, err := strconv.Atoi(pageStr)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page number must be an integer"})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"error": "page number must be an integer",
+				},
+			)
 			return
 		}
 
 		// Validate for positive page number
 		if page < 0 {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page number must be positive"})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"error": "page number must be positive",
+				},
+			)
 			return
 		}
 
 		// Extract the size from the query string and convert it to an integer
-		sizeStr := c.DefaultQuery(opts.SizeText, opts.PageSize)
+		sizeStr := c.DefaultQuery(opts.SizeText, opts.DefaultPageSize)
 		size, err := strconv.Atoi(sizeStr)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page size must be an integer"})
+			c.AbortWithStatusJSON(
+				http.StatusBadRequest,
+				gin.H{
+					"error": "page size must be an integer",
+				},
+			)
 			return
 		}
 
 		// Validate for min and max page size
 		if size < opts.MinPageSize || size > opts.MaxPageSize {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "page size must be between " + strconv.Itoa(opts.MinPageSize) + " and " + strconv.Itoa(opts.MaxPageSize)})
+			errorMessage := fmt.Sprintf(
+				"page size must be between %d and %d", opts.MinPageSize, opts.MaxPageSize,
+			)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": errorMessage})
 			return
 		}
 
