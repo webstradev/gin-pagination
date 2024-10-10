@@ -1,6 +1,6 @@
 package pagination
 
-type Options struct {
+type options struct {
 	PageText    string
 	SizeText    string
 	Page        string
@@ -9,9 +9,9 @@ type Options struct {
 	MaxPageSize int
 }
 
-type CustomOption func(opts *Options)
+type CustomOption func(opts *options)
 
-var defaultOptions = Options{
+var defaultOptions = options{
 	PageText:    "page",
 	SizeText:    "size",
 	Page:        "1",
