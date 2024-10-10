@@ -16,7 +16,7 @@ const (
 	DefaultMaxPageSize = 100
 )
 
-// Create a new pagination middleware with default values
+// Default returns a new pagination middleware with default values.
 func Default() gin.HandlerFunc {
 	return New(
 		DefaultPageText,
@@ -28,7 +28,7 @@ func Default() gin.HandlerFunc {
 	)
 }
 
-// Create a new pagniation middleware with custom values
+// New returns a new pagination middleware with custom values.
 func New(pageText, sizeText, defaultPage, defaultPageSize string, minPageSize, maxPageSize int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Extract the page from the query string and convert it to an integer
