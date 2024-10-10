@@ -17,7 +17,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 	opts := applyCustomOptionsToDefault(customOptions...)
 
 	return func(c *gin.Context) {
-		// Extract the page from the query string and convert it to an integer
+		// Extract the page from the query string and convert it to an integer.
 		pageStr := c.DefaultQuery(opts.PageText, opts.DefaultPage)
 		page, err := strconv.Atoi(pageStr)
 		if err != nil {
@@ -30,7 +30,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 			return
 		}
 
-		// Validate for positive page number
+		// Validate for positive page number.
 		if page < 0 {
 			c.AbortWithStatusJSON(
 				http.StatusBadRequest,
@@ -41,7 +41,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 			return
 		}
 
-		// Extract the size from the query string and convert it to an integer
+		// Extract the size from the query string and convert it to an integer.
 		sizeStr := c.DefaultQuery(opts.SizeText, opts.DefaultPageSize)
 		size, err := strconv.Atoi(sizeStr)
 		if err != nil {
@@ -54,7 +54,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 			return
 		}
 
-		// Validate for min and max page size
+		// Validate for min and max page size.
 		if size < opts.MinPageSize || size > opts.MaxPageSize {
 			errorMessage := fmt.Sprintf(
 				"page size must be between %d and %d", opts.MinPageSize, opts.MaxPageSize,
@@ -63,7 +63,7 @@ func New(customOptions ...CustomOption) gin.HandlerFunc {
 			return
 		}
 
-		// Set the page and size in the gin context
+		// Set the page and size in the gin context.
 		c.Set(opts.PageText, page)
 		c.Set(opts.SizeText, size)
 
