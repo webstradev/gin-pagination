@@ -9,7 +9,7 @@ Simple pagination middleware for the gin framework. Allows for the usage of url 
 
 ## Installation
 ```bash
-$ go get github.com/webstradev/gin-pagination
+$ go get github.com/webstradev/gin-pagination/v2
 ```
 
 ## Default Usage
@@ -23,7 +23,7 @@ import (
   "net/http"
 
   "github.com/gin-gonic/gin"
-  "github.com/webstradev/gin-pagination"
+  "github.com/webstradev/gin-pagination/v2/pkg/pagination"
 )
 
 func main(){
@@ -47,7 +47,7 @@ import (
   "net/http"
   
   "github.com/gin-gonic/gin"
-  "github.com/webstradev/gin-pagination"
+  "github.com/webstradev/gin-pagination/v2/pkg/pagination"
 )
 
 func main(){
@@ -75,7 +75,7 @@ import (
   "net/http"
   
   "github.com/gin-gonic/gin"
-  "github.com/webstradev/gin-pagination"
+  "github.com/webstradev/gin-pagination/v2/pkg/pagination"
 )
 
 func main(){
