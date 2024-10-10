@@ -29,7 +29,7 @@ import (
 func main(){
   r := gin.Default()
   
-  r.Use(pagination.Default())
+  r.Use(pagination.New())
   
   r.GET("/hello", func(c *gin.Context){
     c.Status(http.StatusOK)  
@@ -53,20 +53,21 @@ import (
 func main(){
   r := gin.Default()
   
-  r.GET("/hello", pagination.Default(), func(c *gin.Context){
+  r.GET("/hello", pagination.New(), func(c *gin.Context){
     page := c.GetInt("page")
   
-    c.JSON(http.StatusOK, gin.H{"page":page})  
+    c.JSON(http.StatusOK, gin.H{"page" : page})  
   })
   
   r.Run(":3000")
 }
 ```
-The `page` and `size` are now available in the gin context of a request and can be used to paginate your date (for example in an SQL query).
+The `page` and `size` are now available in the gin context of a request and can be used to paginate your data (for example in an SQL query).
 
  
 ## Custom Usage
-To create a pagination middleware with custom parameters use the `pagination.New()` function.
+To create a pagination middleware with custom parameters the New() function supports various custom options provided as functions that overwrite the default value.
+All the options can be seen in the example below.
 ```go
 package main
 
@@ -80,7 +81,14 @@ import (
 func main(){
   r := gin.Default()
   
-  paginator := pagination.New("page", "rowsPerPage", "1", "15", 5, 150)
+  paginator := pagination.New(
+    pagination.WithPageText("page"), 
+    pagination.WithSizeText("rowsPerPage"),
+    pagination.WithDefaultPage(1),
+    pagination.WithDefaultPageSize(15),
+    pagination.WithMinPageSize(5),
+    pagination.WithMaxPageSize(15),
+  )
   
   r.GET("/hello", paginator, func(c *gin.Context){
     c.Status(http.StatusOK)  
