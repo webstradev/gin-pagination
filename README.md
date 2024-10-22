@@ -15,7 +15,7 @@ $ go get github.com/webstradev/gin-pagination/v2
 ## Default Usage
 This package comes with a default pagination handler. This uses query parameters `page` and `size` with default values of `1` and `10` and a maximum page size of `100`.
 
-#### Using the middleware on a router will apply the it to all request on that router:
+#### Using the middleware on a router will apply the it to all requests on that router:
 ```go
 package main
 
