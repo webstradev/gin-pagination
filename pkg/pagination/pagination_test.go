@@ -8,20 +8,20 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jmetrikat/gin-pagination/v2/pkg/pagination"
+	"github.com/webstradev/gin-pagination/v2/pkg/pagination"
 )
 
 func TestPaginationMiddleware(t *testing.T) {
 	tests := []struct {
-		name          string
-		middleware    gin.HandlerFunc
-		queryParams   url.Values
-		expectedPage  int
-		expectedSize  int
-		offsetText    string
-		limitText     string
-		expectError   bool
-		errorContains string
+		name           string
+		middleware     gin.HandlerFunc
+		queryParams    url.Values
+		expectedPage   int
+		expectedSize   int
+		customPageText string
+		customSizeText string
+		expectError    bool
+		errorContains  string
 	}{
 		{
 			"Non int Page Param - Bad Request",
@@ -201,16 +201,16 @@ func TestPaginationMiddleware(t *testing.T) {
 			tt.middleware(ctx)
 
 			// Handle custom page and size text
-			if tt.offsetText == "" {
-				tt.offsetText = "page"
+			if tt.customPageText == "" {
+				tt.customPageText = "page"
 			}
 
-			if tt.limitText == "" {
-				tt.limitText = "size"
+			if tt.customSizeText == "" {
+				tt.customSizeText = "size"
 			}
 
-			gotPage := ctx.GetInt(tt.offsetText)
-			gotSize := ctx.GetInt(tt.limitText)
+			gotPage := ctx.GetInt(tt.customPageText)
+			gotSize := ctx.GetInt(tt.customSizeText)
 
 			// Check if the page and pageSize are set correctly or if an error is expected
 			if tt.expectError {
