@@ -1,4 +1,4 @@
-module github.com/webstradev/gin-pagination/v2
+module github.com/jmetrikat/gin-pagination/v2
 
 go 1.23
 
