@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,8 @@ func TestPaginationMiddleware(t *testing.T) {
 		expectedSize   int
 		customPageText string
 		customSizeText string
+		expectError    bool
+		errorContains  string
 	}{
 		{
 			"Non int Page Param - Bad Request",
@@ -30,6 +33,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			0,
 			"",
 			"",
+			true,
+			"page parameter must be an integer",
 		},
 		{
 			"Non int Size Param - Bad Request",
@@ -42,6 +47,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			0,
 			"",
 			"",
+			true,
+			"size parameter must be an integer",
 		},
 		{
 			"Negative Page Param - Bad Request",
@@ -53,6 +60,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			0,
 			"",
 			"",
+			true,
+			"page number must be positive",
 		},
 		{
 			"Size below min - Bad Request",
@@ -65,6 +74,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			0,
 			"",
 			"",
+			true,
+			"size must be between",
 		},
 		{
 			"Size above max - Bad Request",
@@ -77,6 +88,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			0,
 			"",
 			"",
+			true,
+			"size must be between",
 		},
 		{
 			"Default Handling",
@@ -85,6 +98,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			1,
 			10,
 			"",
+			"",
+			false,
 			"",
 		},
 		{
@@ -98,6 +113,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			100,
 			"",
 			"",
+			false,
+			"",
 		},
 		{
 			"The second 20 results",
@@ -109,6 +126,8 @@ func TestPaginationMiddleware(t *testing.T) {
 			2,
 			20,
 			"",
+			"",
+			false,
 			"",
 		},
 		{
@@ -126,14 +145,50 @@ func TestPaginationMiddleware(t *testing.T) {
 			5,
 			"pages",
 			"items",
+			false,
+			"",
+		},
+		{
+			"Invalid Custom Page Param - Bad Request",
+			pagination.New(
+				pagination.WithPageText("offset"),
+			),
+			url.Values{
+				"offset": {"-1"},
+			},
+			0,
+			0,
+			"offset",
+			"",
+			true,
+			"offset number must be positive",
+		},
+		{
+			"Invalid Custom Size Param - Bad Request",
+			pagination.New(
+				pagination.WithSizeText("limit"),
+				pagination.WithMinPageSize(1),
+				pagination.WithMaxPageSize(25),
+			),
+			url.Values{
+				"limit": {"-1"},
+			},
+			0,
+			0,
+			"",
+			"limit",
+			true,
+			"limit must be between 1 and 25",
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gin.SetMode(gin.TestMode)
 
 			// Create a test context
-			ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
 
 			// Add the query parameters to the Request of the test context
 			ctx.Request = &http.Request{
@@ -155,14 +210,23 @@ func TestPaginationMiddleware(t *testing.T) {
 			}
 
 			gotPage := ctx.GetInt(tt.customPageText)
-			// Check if the page and pageSize are set correctly
-			if gotPage != tt.expectedPage {
-				t.Errorf("Expected page %d, got %d", tt.expectedPage, gotPage)
-			}
-
 			gotSize := ctx.GetInt(tt.customSizeText)
-			if gotSize != tt.expectedSize {
-				t.Errorf("Expected size %d, got %d", tt.expectedSize, gotSize)
+
+			// Check if the page and pageSize are set correctly or if an error is expected
+			if tt.expectError {
+				if gotPage != 0 || gotSize != 0 {
+					t.Errorf("Expected error, but got page %d and size %d", gotPage, gotSize)
+				}
+				if !strings.Contains(recorder.Body.String(), tt.errorContains) {
+					t.Errorf("Expected error message to contain '%s', but got '%s'", tt.errorContains, recorder.Body.String())
+				}
+			} else {
+				if gotPage != tt.expectedPage {
+					t.Errorf("Expected page %d, got %d", tt.expectedPage, gotPage)
+				}
+				if gotSize != tt.expectedSize {
+					t.Errorf("Expected size %d, got %d", tt.expectedSize, gotSize)
+				}
 			}
 		})
 	}
