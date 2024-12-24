@@ -95,7 +95,9 @@ func (p *paginator) validatePageSize(size int) error {
 
 func (p *paginator) setPageAndPageSize(page int, size int) {
 	p.c.Set(p.opts.PageText, page)
+	p.c.Header(p.opts.PageText, strconv.Itoa(page))
 	p.c.Set(p.opts.SizeText, size)
+	p.c.Header(p.opts.SizeText, strconv.Itoa(size))
 }
 
 func (p *paginator) Next() {
