@@ -167,3 +167,125 @@ func TestPaginationMiddleware(t *testing.T) {
 		})
 	}
 }
+
+func TestPaginationHeaders(t *testing.T) {
+	tests := []struct {
+		name            string
+		middleware      gin.HandlerFunc
+		queryParams     url.Values
+		expectedHeaders map[string]string
+	}{
+		{
+			name:       "Default headers are set correctly",
+			middleware: pagination.New(),
+			queryParams: url.Values{
+				"page": {"2"},
+				"size": {"20"},
+			},
+			expectedHeaders: map[string]string{
+				"X-Page": "2",
+				"X-Size": "20",
+			},
+		},
+		{
+			name: "Custom text headers are set correctly",
+			middleware: pagination.New(
+				pagination.WithPageText("offset"),
+				pagination.WithSizeText("limit"),
+			),
+			queryParams: url.Values{
+				"offset": {"3"},
+				"limit":  {"15"},
+			},
+			expectedHeaders: map[string]string{
+				"X-Offset": "3",
+				"X-Limit":  "15",
+			},
+		},
+		{
+			name:            "No headers on invalid input",
+			middleware:      pagination.New(),
+			queryParams:     url.Values{"page": {"invalid"}},
+			expectedHeaders: map[string]string{},
+		},
+		{
+			name:        "Default values are set in headers when no query params",
+			middleware:  pagination.New(),
+			queryParams: url.Values{},
+			expectedHeaders: map[string]string{
+				"X-Page": "1",
+				"X-Size": "10",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gin.SetMode(gin.TestMode)
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = &http.Request{
+				URL: &url.URL{
+					RawQuery: tt.queryParams.Encode(),
+				},
+			}
+
+			tt.middleware(ctx)
+
+			// Check for expected headers
+			for headerKey, expectedValue := range tt.expectedHeaders {
+				if gotValue := recorder.Header().Get(headerKey); gotValue != expectedValue {
+					t.Errorf("Expected header %s to be %s, got %s", headerKey, expectedValue, gotValue)
+				}
+			}
+		})
+	}
+}
+
+func TestConstructHeader(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "Empty string",
+			input:    "",
+			expected: "",
+		},
+		{
+			name:     "Single letter",
+			input:    "a",
+			expected: "X-A",
+		},
+		{
+			name:     "Multiple letters",
+			input:    "page",
+			expected: "X-Page",
+		},
+		{
+			name:     "Already capitalized",
+			input:    "Page",
+			expected: "X-Page",
+		},
+		{
+			name:     "Mixed case",
+			input:    "pageSize",
+			expected: "X-PageSize",
+		},
+		{
+			name:     "With numbers",
+			input:    "page2",
+			expected: "X-Page2",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := pagination.ConstructHeader(tt.input)
+			if got != tt.expected {
+				t.Errorf("ConstructHeader(%q) = %q, want %q", tt.input, got, tt.expected)
+			}
+		})
+	}
+}
