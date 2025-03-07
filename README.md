@@ -100,3 +100,6 @@ func main(){
 ```
 
 The custom middleware can also be used on an entire router object similarly to the first example fo the Default Usage.
+
+## Similar package
+I've written a similar package for the labstack echo framework called [echo-pagination](https://github.com/webstradev/echo-pagination)
