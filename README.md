@@ -88,6 +88,7 @@ func main(){
     pagination.WithDefaultPageSize(15),
     pagination.WithMinPageSize(5),
     pagination.WithMaxPageSize(15),
+    pagination.WithHeaderPrefix(""),
   )
   
   r.GET("/hello", paginator, func(c *gin.Context){
