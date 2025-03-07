@@ -46,6 +46,14 @@ func WithMaxPageSize(maxPageSize int) CustomOption {
 	}
 }
 
+// WithHeaderPrefix allows for customizing the header prefix.
+// Empty strings are allowed and will result in no prefix.
+func WithHeaderPrefix(headerPrefix string) CustomOption {
+	return func(opts *options) {
+		opts.HeaderPrefix = headerPrefix
+	}
+}
+
 type options struct {
 	PageText        string
 	SizeText        string
@@ -53,6 +61,7 @@ type options struct {
 	DefaultPageSize int
 	MinPageSize     int
 	MaxPageSize     int
+	HeaderPrefix    string
 }
 
 var defaultOptions = options{
@@ -62,6 +71,7 @@ var defaultOptions = options{
 	DefaultPageSize: 10,
 	MinPageSize:     10,
 	MaxPageSize:     100,
+	HeaderPrefix:    "x-",
 }
 
 func applyCustomOptionsToDefault(customOptions ...CustomOption) options {

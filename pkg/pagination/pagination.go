@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -98,18 +97,14 @@ func (p *paginator) setPageAndPageSize(page int, size int) {
 	p.c.Set(p.opts.PageText, page)
 	p.c.Set(p.opts.SizeText, size)
 
-	p.c.Header(ConstructHeader(p.opts.PageText), strconv.Itoa(page))
-	p.c.Header(ConstructHeader(p.opts.SizeText), strconv.Itoa(size))
+	p.c.Header(p.constructHeader(p.opts.PageText), strconv.Itoa(page))
+	p.c.Header(p.constructHeader(p.opts.SizeText), strconv.Itoa(size))
+}
+
+func (p *paginator) constructHeader(text string) string {
+	return p.opts.HeaderPrefix + text
 }
 
 func (p *paginator) Next() {
 	p.c.Next()
-}
-
-// ConstructHeader creates a standardized header name with X- prefix and proper casing
-func ConstructHeader(text string) string {
-	if text == "" {
-		return ""
-	}
-	return fmt.Sprintf("X-%s%s", strings.ToUpper(text[:1]), text[1:])
 }

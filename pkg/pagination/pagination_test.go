@@ -188,6 +188,18 @@ func TestPaginationHeaders(t *testing.T) {
 			},
 		},
 		{
+			name:       "Default headers without prefix",
+			middleware: pagination.New(pagination.WithHeaderPrefix("")),
+			queryParams: url.Values{
+				"page": {"2"},
+				"size": {"20"},
+			},
+			expectedHeaders: map[string]string{
+				"page": "2",
+				"size": "20",
+			},
+		},
+		{
 			name: "Custom text headers are set correctly",
 			middleware: pagination.New(
 				pagination.WithPageText("offset"),
@@ -199,7 +211,7 @@ func TestPaginationHeaders(t *testing.T) {
 			},
 			expectedHeaders: map[string]string{
 				"X-Offset": "3",
-				"X-Limit":  "15",
+				"X-limit":  "15",
 			},
 		},
 		{
@@ -210,7 +222,7 @@ func TestPaginationHeaders(t *testing.T) {
 		},
 		{
 			name:        "Default values are set in headers when no query params",
-			middleware:  pagination.New(),
+			middleware:  pagination.New(pagination.WithHeaderPrefix("X-")),
 			queryParams: url.Values{},
 			expectedHeaders: map[string]string{
 				"X-Page": "1",
@@ -237,54 +249,6 @@ func TestPaginationHeaders(t *testing.T) {
 				if gotValue := recorder.Header().Get(headerKey); gotValue != expectedValue {
 					t.Errorf("Expected header %s to be %s, got %s", headerKey, expectedValue, gotValue)
 				}
-			}
-		})
-	}
-}
-
-func TestConstructHeader(t *testing.T) {
-	tests := []struct {
-		name     string
-		input    string
-		expected string
-	}{
-		{
-			name:     "Empty string",
-			input:    "",
-			expected: "",
-		},
-		{
-			name:     "Single letter",
-			input:    "a",
-			expected: "X-A",
-		},
-		{
-			name:     "Multiple letters",
-			input:    "page",
-			expected: "X-Page",
-		},
-		{
-			name:     "Already capitalized",
-			input:    "Page",
-			expected: "X-Page",
-		},
-		{
-			name:     "Mixed case",
-			input:    "pageSize",
-			expected: "X-PageSize",
-		},
-		{
-			name:     "With numbers",
-			input:    "page2",
-			expected: "X-Page2",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := pagination.ConstructHeader(tt.input)
-			if got != tt.expected {
-				t.Errorf("ConstructHeader(%q) = %q, want %q", tt.input, got, tt.expected)
 			}
 		})
 	}
