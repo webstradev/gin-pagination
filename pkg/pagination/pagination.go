@@ -5,7 +5,6 @@
 package pagination
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -79,7 +78,7 @@ func (p *paginator) getIntValueWithDefault(key string, defaultValue string) (int
 
 func (p *paginator) validatePage(page int) error {
 	if page < 0 {
-		return errors.New("page number must be positive")
+		return fmt.Errorf("%s number must be positive", p.opts.PageText)
 	}
 
 	return nil
@@ -87,7 +86,12 @@ func (p *paginator) validatePage(page int) error {
 
 func (p *paginator) validatePageSize(size int) error {
 	if size < p.opts.MinPageSize || size > p.opts.MaxPageSize {
-		return errors.New("page size must be between %d and %d")
+		return fmt.Errorf(
+			"%s must be between %d and %d",
+			p.opts.SizeText,
+			p.opts.MinPageSize,
+			p.opts.MaxPageSize,
+		)
 	}
 
 	return nil
