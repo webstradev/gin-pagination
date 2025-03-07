@@ -86,7 +86,12 @@ func (p *paginator) validatePage(page int) error {
 
 func (p *paginator) validatePageSize(size int) error {
 	if size < p.opts.MinPageSize || size > p.opts.MaxPageSize {
-		return fmt.Errorf("%s must be between %d and %d", p.opts.SizeText, p.opts.MinPageSize, p.opts.MaxPageSize)
+		return fmt.Errorf(
+			"%s must be between %d and %d",
+			p.opts.SizeText,
+			p.opts.MinPageSize,
+			p.opts.MaxPageSize,
+		)
 	}
 
 	return nil
