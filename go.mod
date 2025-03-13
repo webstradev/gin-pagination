@@ -1,6 +1,7 @@
 module github.com/webstradev/gin-pagination/v2
 
-go 1.23
+go 1.24
+
 // Broken module path.
 retract v2.0.0
 
